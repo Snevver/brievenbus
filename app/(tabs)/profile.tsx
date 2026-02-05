@@ -1,10 +1,10 @@
 import { StyleSheet } from 'react-native';
 import { Text } from '../components/Text';
 
-export default function ExploreScreen() {
+export default function NewPage() {
   return (
     <Text style={styles.customText}>
-      Explore Screen
+      Profile page
     </Text>
   );
 }

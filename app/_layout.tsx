@@ -1,9 +1,36 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { DarkTheme, DefaultTheme, ThemeProvider, Theme } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+import { useFonts, Inter_400Regular, Inter_500Medium, Inter_600SemiBold, Inter_700Bold } from '@expo-google-fonts/inter';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
+
+// Prevent splash screen from auto-hiding until fonts are loaded
+SplashScreen.preventAutoHideAsync();
+
+// Custom themes with Inter font
+const CustomDarkTheme: Theme = {
+  ...DarkTheme,
+  fonts: {
+    ...DarkTheme.fonts,
+    regular: { fontFamily: 'Inter_400Regular', fontWeight: '400' },
+    medium: { fontFamily: 'Inter_500Medium', fontWeight: '500' },
+    bold: { fontFamily: 'Inter_700Bold', fontWeight: '700' },
+  },
+};
+
+const CustomDefaultTheme: Theme = {
+  ...DefaultTheme,
+  fonts: {
+    ...DefaultTheme.fonts,
+    regular: { fontFamily: 'Inter_400Regular', fontWeight: '400' },
+    medium: { fontFamily: 'Inter_500Medium', fontWeight: '500' },
+    bold: { fontFamily: 'Inter_700Bold', fontWeight: '700' },
+  },
+};
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -12,8 +39,25 @@ export const unstable_settings = {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={colorScheme === 'dark' ? CustomDarkTheme : CustomDefaultTheme}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
